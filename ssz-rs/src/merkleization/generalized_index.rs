@@ -48,9 +48,9 @@ pub trait SszReflect: Serialize + Merkleized + AsAny {
 
 /// Converts a path (eg. `[7, "foo", 3]` for `x[7].foo[3]`, `[12, "bar", "__len__"]` for
 ///  `len(x[12].bar)`) into the generalized index representing its position in the Merkle tree.
-pub fn get_generalized_index(
-    mut typ: &dyn SszReflect,
-    path: &'static [SszVariableOrIndex],
+pub fn get_generalized_index<'a>(
+    mut typ: &'a dyn SszReflect,
+    path: &'a [SszVariableOrIndex],
 ) -> usize {
     let mut root = 1usize;
 
