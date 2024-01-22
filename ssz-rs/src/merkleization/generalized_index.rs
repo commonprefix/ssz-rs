@@ -238,3 +238,16 @@ impl GeneralizedIndex {
         Self(self.0 / 2)
     }
 }
+
+pub struct GeneralizedIndex64(pub u64);
+
+impl GeneralizedIndex64 {
+    pub fn get_bit(&self, position: usize) -> bool {
+        self.0 & (1 << position) > 0
+    }
+
+    pub fn get_path_length(&self) -> usize {
+        assert!(self.0 > 0 as u64);
+        (num_bits::<usize>() as u32 - self.0.leading_zeros() - 1) as usize
+    }
+}
