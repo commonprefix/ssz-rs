@@ -2,15 +2,14 @@ use crate::{
     field_inspect::FieldsIterMut,
     lib::*,
     merkleization::{
-        merkleize_to_virtual_tree, pack_bytes, GeneralizedIndex, Node, BYTES_PER_CHUNK,
+        merkleize_to_virtual_tree, pack_bytes, GeneralizedIndex, GeneralizedIndex64, Node,
+        BYTES_PER_CHUNK,
     },
     Bitlist, Bitvector, ElementsType, MerkleizationError, Merkleized, SimpleSerialize, SszReflect,
     SszTypeClass,
 };
 use alloc::collections::{BTreeMap, BTreeSet};
 use sha2::{Digest, Sha256};
-
-use super::GeneralizedIndex64;
 
 pub fn is_valid_merkle_branch<'a>(
     leaf: &Node,

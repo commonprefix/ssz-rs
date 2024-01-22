@@ -27,7 +27,8 @@ pub use list::List;
 pub use merkleization::{
     calculate_merkle_root, calculate_multi_merkle_root, field_inspect, generate_proof,
     get_generalized_index, is_valid_merkle_branch, verify_merkle_multiproof, verify_merkle_proof,
-    GeneralizedIndex, MerkleizationError, Merkleized, Node, SszReflect, SszVariableOrIndex,
+    verify_merkle_proof_u64, GeneralizedIndex, GeneralizedIndex64, MerkleizationError, Merkleized,
+    Node, SszReflect, SszVariableOrIndex,
 };
 pub use ser::{Serialize, SerializeError};
 pub use uint::U256;
