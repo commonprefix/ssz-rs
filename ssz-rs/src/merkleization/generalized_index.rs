@@ -239,6 +239,7 @@ impl GeneralizedIndex {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct GeneralizedIndex64(pub u64);
 
 impl GeneralizedIndex64 {
