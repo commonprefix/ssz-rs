@@ -11,6 +11,8 @@ use crate::{
 use alloc::collections::{BTreeMap, BTreeSet};
 use sha2::{Digest, Sha256};
 
+use super::GeneralizedIndexTrait;
+
 pub fn is_valid_merkle_branch<'a>(
     leaf: &Node,
     mut branch: impl Iterator<Item = &'a Node>,
@@ -179,7 +181,11 @@ fn get_helper_indices(indices: &[GeneralizedIndex]) -> Vec<GeneralizedIndex> {
     all_branch_indices
 }
 
-pub fn calculate_merkle_root_u64(leaf: &Node, proof: &[Node], index: &GeneralizedIndex64) -> Node {
+pub fn calculate_merkle_root<T: GeneralizedIndexTrait>(
+    leaf: &Node,
+    proof: &[Node],
+    index: &T,
+) -> Node {
     debug_assert_eq!(proof.len(), index.get_path_length());
     let mut result = *leaf;
 
@@ -197,37 +203,10 @@ pub fn calculate_merkle_root_u64(leaf: &Node, proof: &[Node], index: &Generalize
     result
 }
 
-pub fn verify_merkle_proof_u64(
+pub fn verify_merkle_proof<T: GeneralizedIndexTrait>(
     leaf: &Node,
     proof: &[Node],
-    index: &GeneralizedIndex64,
-    root: &Node,
-) -> bool {
-    &calculate_merkle_root_u64(leaf, proof, index) == root
-}
-
-pub fn calculate_merkle_root(leaf: &Node, proof: &[Node], index: &GeneralizedIndex) -> Node {
-    debug_assert_eq!(proof.len(), index.get_path_length());
-    let mut result = *leaf;
-
-    let mut hasher = Sha256::new();
-    for (i, next) in proof.iter().enumerate() {
-        if index.get_bit(i) {
-            hasher.update(&next.0);
-            hasher.update(&result.0);
-        } else {
-            hasher.update(&result.0);
-            hasher.update(&next.0);
-        }
-        result.0.copy_from_slice(&hasher.finalize_reset());
-    }
-    result
-}
-
-pub fn verify_merkle_proof(
-    leaf: &Node,
-    proof: &[Node],
-    index: &GeneralizedIndex,
+    index: &T,
     root: &Node,
 ) -> bool {
     &calculate_merkle_root(leaf, proof, index) == root

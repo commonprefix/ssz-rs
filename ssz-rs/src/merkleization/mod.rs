@@ -17,7 +17,7 @@ pub use generalized_index::*;
 pub use node::Node;
 pub use proofs::{
     calculate_merkle_root, calculate_multi_merkle_root, generate_proof, is_valid_merkle_branch,
-    verify_merkle_multiproof, verify_merkle_proof, verify_merkle_proof_u64,
+    verify_merkle_multiproof, verify_merkle_proof,
 };
 
 pub(crate) const BYTES_PER_CHUNK: usize = 32;

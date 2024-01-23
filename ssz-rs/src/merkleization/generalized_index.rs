@@ -199,13 +199,52 @@ const fn num_bits<T>() -> usize {
     core::mem::size_of::<T>() * 8
 }
 
-fn log_2(x: usize) -> u32 {
-    assert!(x > 0);
-    num_bits::<usize>() as u32 - x.leading_zeros() - 1
+pub trait GeneralizedIndexTrait: Sized {
+    fn new(value: u64) -> Self;
+    fn get_value(&self) -> u64;
+    fn get_path_length(&self) -> usize;
+
+    fn sibling(&self) -> Self {
+        Self::new(self.get_value() ^ 1)
+    }
+
+    fn get_bit(&self, position: usize) -> bool {
+        self.get_value() & (1 << position) > 0
+    }
+
+    fn child_left(&self) -> Self {
+        Self::new(self.get_value() * 2)
+    }
+
+    fn child_right(&self) -> Self {
+        Self::new(self.get_value() * 2 + 1)
+    }
+
+    fn parent(&self) -> Self {
+        Self::new(self.get_value() / 2)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct GeneralizedIndex(pub usize);
+
+impl GeneralizedIndexTrait for GeneralizedIndex {
+    fn new(value: u64) -> GeneralizedIndex {
+        if value > usize::MAX as u64 {
+            panic!("Converting u64 to usize for GeneralizedIndex will overflow");
+        }
+        GeneralizedIndex(value as usize)
+    }
+
+    fn get_value(&self) -> u64 {
+        self.0 as u64
+    }
+
+    fn get_path_length(&self) -> usize {
+        assert!(self.0 > 0);
+        (num_bits::<usize>() as u32 - self.0.leading_zeros() - 1) as usize
+    }
+}
 
 impl Default for GeneralizedIndex {
     fn default() -> Self {
@@ -213,42 +252,26 @@ impl Default for GeneralizedIndex {
     }
 }
 
-impl GeneralizedIndex {
-    pub fn get_path_length(&self) -> usize {
-        log_2(self.0) as usize
-    }
-
-    pub fn get_bit(&self, position: usize) -> bool {
-        self.0 & (1 << position) > 0
-    }
-
-    pub fn sibling(&self) -> Self {
-        Self(self.0 ^ 1)
-    }
-
-    pub fn child_left(&self) -> Self {
-        Self(self.0 * 2)
-    }
-
-    pub fn child_right(&self) -> Self {
-        Self(self.0 * 2 + 1)
-    }
-
-    pub fn parent(&self) -> Self {
-        Self(self.0 / 2)
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct GeneralizedIndex64(pub u64);
 
-impl GeneralizedIndex64 {
-    pub fn get_bit(&self, position: usize) -> bool {
-        self.0 & (1 << position) > 0
+impl GeneralizedIndexTrait for GeneralizedIndex64 {
+    fn new(value: u64) -> GeneralizedIndex64 {
+        GeneralizedIndex64(value)
     }
 
-    pub fn get_path_length(&self) -> usize {
-        assert!(self.0 > 0 as u64);
-        (num_bits::<usize>() as u32 - self.0.leading_zeros() - 1) as usize
+    fn get_value(&self) -> u64 {
+        self.0
+    }
+
+    fn get_path_length(&self) -> usize {
+        assert!(self.0 > 0);
+        (num_bits::<u64>() as u32 - self.0.leading_zeros() - 1) as usize
+    }
+}
+
+impl Default for GeneralizedIndex64 {
+    fn default() -> Self {
+        Self(1)
     }
 }
